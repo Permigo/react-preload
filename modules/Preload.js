@@ -46,6 +46,7 @@ class Preload extends Component {
 
         this._handleSuccess = this._handleSuccess.bind(this);
         this._handleError = this._handleError.bind(this);
+        this._preload = this._preload.bind(this);
     }
 
     componentWillMount() {
@@ -55,15 +56,31 @@ class Preload extends Component {
     }
 
     componentDidMount() {
-        if (!this.state.ready) {
-            ImageHelper
-                .loadImages(this.props.images)
-                .then(this._handleSuccess, this._handleError);
+        this._preload();
+    }
 
-            if (this.props.autoResolveDelay && this.props.autoResolveDelay > 0) {
-                this.autoResolveTimeout = setTimeout(this._handleSuccess, this.props.autoResolveDelay);
+    componentWillReceiveProps(nextProps) {
+        let imagesChanged = false;
+        if (nextProps.images.length !== this.props.images.length) {
+            imagesChanged = true;
+        }
+
+        for (let i = 0; i < nextProps.images; ++i) {
+            if (nextProps.images[i] !== this.props.images[i]) {
+                imagesChanged = true;
+                break;
             }
         }
+
+        if (imagesChanged) {
+            this.setState({
+                ready: false
+            })
+        }
+    }
+
+    componentWillUpdate() {
+        this._preload();
     }
 
     componentWillUnmount() {
@@ -98,6 +115,18 @@ class Preload extends Component {
 
         if (this.props.onError) {
             this.props.onError(err);
+        }
+    }
+
+    _preload() {
+        if (!this.state.ready) {
+            ImageHelper
+                .loadImages(this.props.images)
+                .then(this._handleSuccess, this._handleError);
+
+            if (this.props.autoResolveDelay && this.props.autoResolveDelay > 0) {
+                this.autoResolveTimeout = setTimeout(this._handleSuccess, this.props.autoResolveDelay);
+            }
         }
     }
 
