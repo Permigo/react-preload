@@ -6,7 +6,8 @@
   "scripts": {
     "build": "./scripts/build.sh",
     "test": "./node_modules/.bin/eslint -c .eslintrc modules/*",
-    "prepublish": "npm run build"
+    "prepublish": "npm run build",
+    "install": "babel ./modules -d lib"
   },
   "repository": {
     "type": "git",
