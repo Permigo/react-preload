@@ -27,13 +27,13 @@ const propTypes = {
 
     // Whether or not we should mount the child content after
     // images have finished loading (or after autoResolveDelay)
-    mountChildren: PropTypes.bool,
+    mountChildren: PropTypes.bool
 };
 
 const defaultProps = {
     images: [],
     resolveOnError: true,
-    mountChildren: true,
+    mountChildren: true
 };
 
 class Preload extends Component {
@@ -41,7 +41,7 @@ class Preload extends Component {
         super(props);
 
         this.state = {
-            ready: false,
+            ready: false
         };
 
         this._handleSuccess = this._handleSuccess.bind(this);
@@ -56,7 +56,7 @@ class Preload extends Component {
     }
 
     componentDidMount() {
-        this._preload();
+        this._preload(this.props, this.state);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -79,8 +79,8 @@ class Preload extends Component {
         }
     }
 
-    componentWillUpdate() {
-        this._preload();
+    componentWillUpdate(nextProps, nextState) {
+        this._preload(nextProps, nextState);
     }
 
     componentWillUnmount() {
@@ -100,7 +100,7 @@ class Preload extends Component {
         }
 
         this.setState({
-            ready: true,
+            ready: true
         });
 
         if (this.props.onSuccess) {
@@ -118,14 +118,14 @@ class Preload extends Component {
         }
     }
 
-    _preload() {
-        if (!this.state.ready) {
+    _preload(props, state) {
+        if (!state.ready) {
             ImageHelper
-                .loadImages(this.props.images)
+                .loadImages(props.images)
                 .then(this._handleSuccess, this._handleError);
 
-            if (this.props.autoResolveDelay && this.props.autoResolveDelay > 0) {
-                this.autoResolveTimeout = setTimeout(this._handleSuccess, this.props.autoResolveDelay);
+            if (props.autoResolveDelay && props.autoResolveDelay > 0) {
+                this.autoResolveTimeout = setTimeout(this._handleSuccess, props.autoResolveDelay);
             }
         }
     }
