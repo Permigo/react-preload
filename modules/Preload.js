@@ -65,7 +65,7 @@ class Preload extends Component {
             imagesChanged = true;
         }
 
-        for (let i = 0; i < nextProps.images; ++i) {
+        for (let i = 0; i < nextProps.images.length; ++i) {
             if (nextProps.images[i] !== this.props.images[i]) {
                 imagesChanged = true;
                 break;
