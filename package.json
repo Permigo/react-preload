@@ -4,9 +4,9 @@
   "description": "A component to manage preloading media before showing a component",
   "main": "lib/index.js",
   "scripts": {
-    "build": "./scripts/build.sh",
+    "build": "rm -rf lib && babel ./modules -d lib",
     "test": "./node_modules/.bin/eslint -c .eslintrc modules/*",
-    "prepublish": "npm run build"
+    "install": "npm run build"
   },
   "repository": {
     "type": "git",

@@ -27,7 +27,7 @@ const propTypes = {
 
     // Whether or not we should mount the child content after
     // images have finished loading (or after autoResolveDelay)
-    mountChildren: PropTypes.bool,
+    mountChildren: PropTypes.bool
 };
 
 const defaultProps = {
@@ -42,11 +42,13 @@ class Preload extends Component {
         super(props);
 
         this.state = {
-            ready: false,
+            ready: false
         };
 
         this._handleSuccess = this._handleSuccess.bind(this);
         this._handleError = this._handleError.bind(this);
+        this._preload = this._preload.bind(this);
+
         this._mounted = false;
     }
 
@@ -57,16 +59,32 @@ class Preload extends Component {
     }
 
     componentDidMount() {
-        this._mounted = true;
-        if (!this.state.ready) {
-            ImageHelper
-                .loadImages(this.props.images)
-                .then(this._handleSuccess, this._handleError);
+        this._mounted = true
+        this._preload(this.props, this.state);
+    }
 
-            if (this.props.autoResolveDelay && this.props.autoResolveDelay > 0) {
-                this.autoResolveTimeout = setTimeout(this._handleSuccess, this.props.autoResolveDelay);
+    componentWillReceiveProps(nextProps) {
+        let imagesChanged = false;
+        if (nextProps.images.length !== this.props.images.length) {
+            imagesChanged = true;
+        }
+
+        for (let i = 0; i < nextProps.images.length; ++i) {
+            if (nextProps.images[i] !== this.props.images[i]) {
+                imagesChanged = true;
+                break;
             }
         }
+
+        if (imagesChanged) {
+            this.setState({
+                ready: false
+            })
+        }
+    }
+
+    componentWillUpdate(nextProps, nextState) {
+        this._preload(nextProps, nextState);
     }
 
     componentWillUnmount() {
@@ -87,7 +105,7 @@ class Preload extends Component {
         }
 
         this.setState({
-            ready: true,
+            ready: true
         });
 
         if (this.props.onSuccess) {
@@ -107,6 +125,18 @@ class Preload extends Component {
 
         if (this.props.onError) {
             this.props.onError(err);
+        }
+    }
+
+    _preload(props, state) {
+        if (!state.ready) {
+            ImageHelper
+                .loadImages(props.images)
+                .then(this._handleSuccess, this._handleError);
+
+            if (props.autoResolveDelay && props.autoResolveDelay > 0) {
+                this.autoResolveTimeout = setTimeout(this._handleSuccess, props.autoResolveDelay);
+            }
         }
     }
 
